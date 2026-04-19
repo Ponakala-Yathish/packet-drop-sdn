@@ -129,14 +129,38 @@ OK
 | What | Result |
 |------|--------|
 | `h1 ping h2` | 100% packet loss |
+
+<img width="1030" height="136" alt="image" src="https://github.com/user-attachments/assets/f0ff39f8-e3d5-4425-b237-080af1c15659" />
+
+
 | `h1 ping h3` | 0% packet loss |
+
+<img width="1004" height="192" alt="image" src="https://github.com/user-attachments/assets/1625bb22-7070-4ed6-9692-e5be0bcdb7e6" />
+
 | tshark on h2 (blocked) | 0 packets captured |
+
+<img width="1505" height="457" alt="image" src="https://github.com/user-attachments/assets/96666ca4-98c6-4619-8273-0422e282b9fa" />
+
+
 | tshark on h3 (allowed) | ICMP packets visible |
+
+<img width="743" height="226" alt="image" src="https://github.com/user-attachments/assets/fea17456-1fce-492e-bc0c-99e72187d3db" />
+
 | ovs-ofctl dump-flows | priority=200 drop rules |
+
+<img width="1498" height="171" alt="image" src="https://github.com/user-attachments/assets/ed7ec84e-98ee-40db-8994-35104606492d" />
+
 | iperf3 UDP blocked | 100% loss |
+
+<img width="918" height="241" alt="Screenshot 2026-04-19 192912" src="https://github.com/user-attachments/assets/a91ba112-beda-4699-816c-f8abd4bf5497" />
+
+
 | iperf3 TCP allowed | ~40 Gbps |
+
+<img width="728" height="261" alt="image" src="https://github.com/user-attachments/assets/e27f36af-f2c8-42cb-81fe-2ee73ebdc7fe" />
+
 | All tests passing | T01–T06 OK |
 
-*(Screenshots in `/screenshots` folder)*
+
 
 ---
