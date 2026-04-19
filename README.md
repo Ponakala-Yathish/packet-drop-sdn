@@ -166,3 +166,10 @@ OK
 
 
 ---
+
+## References
+1. Ryu SDN Framework — https://ryu.readthedocs.io
+2. Mininet Walkthrough — http://mininet.org/walkthrough/
+3. OpenFlow Specification v1.3 — https://opennetworking.org
+4. Open vSwitch ovs-ofctl docs — https://www.openvswitch.org
+5. Feamster et al., "The Road to SDN", ACM Queue 2014
