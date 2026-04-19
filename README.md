@@ -189,19 +189,6 @@ sudo PYTHONPATH=. python3 tests/test_drop_rules.py`
 
 ✅ Wait ~60 seconds. You'll see T01–T06 all `ok`. **Take screenshot.**
 
-```bash
-# Terminal 1 — Start Ryu controller
-cd controller
-ryu-manager packet_drop_controller.py
-
-# Terminal 2 — Launch Mininet topology
-cd topology
-sudo python3 drop_topology.py
-```
-
----
-
-
 
 Expected output:
 T01: Drop rule confirmed ... ok
