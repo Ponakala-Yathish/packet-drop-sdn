@@ -162,5 +162,7 @@ OK
 | All tests passing | T01–T06 OK |
 
 
+<img width="1245" height="236" alt="image" src="https://github.com/user-attachments/assets/26a3d34d-7965-4afc-9842-1b75b174c584" />
+
 
 ---
