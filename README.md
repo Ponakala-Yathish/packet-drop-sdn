@@ -53,6 +53,136 @@ pip3 install ryu
 
 ## Execution
 
+## Terminal 1 — Start Controller
+
+bash
+
+`cd ~/packet-drop-sdn
+source ryu_venv/bin/activate
+cd controller
+ryu-manager packet_drop_controller.py`
+
+✅ Wait until you see:
+
+`CRITICAL: Drop rule installed for 10.0.0.1 -> 10.0.0.2
+CRITICAL: Drop rule installed for 10.0.0.3 -> 10.0.0.4 UDP port 5001`
+
+**Leave this terminal open. Never close it.**
+
+---
+
+## Terminal 2 — Start Mininet
+
+bash
+
+`cd ~/packet-drop-sdn
+source ryu_venv/bin/activate
+cd topology
+sudo python3 drop_topology.py`
+
+✅ Wait until you see `mininet>` prompt.
+
+---
+
+## Screenshot 1 — Ping Blocked (h1 → h2)
+
+In Terminal 2:
+
+bash
+
+`mininet> h1 ping -c 4 h2`
+
+✅ You'll see `100% packet loss`. **Take screenshot.**
+
+---
+
+## Screenshot 2 — Ping Allowed (h1 → h3)
+
+bash
+
+`mininet> h1 ping -c 4 h3`
+
+✅ You'll see `0% packet loss`. **Take screenshot.**
+
+---
+
+## Screenshot 3 — tshark Blocked (h2 gets no ICMP)
+
+bash
+
+`mininet> h2 tshark -i h2-eth0 -c 10 -f "icmp" &
+mininet> h1 ping -c 5 h2`
+
+✅ tshark prints nothing / only ARP. Ping shows 100% loss. **Take screenshot.**
+
+---
+
+## Screenshot 4 — tshark Allowed (h3 gets ICMP)
+
+bash
+
+`mininet> h3 tshark -i h3-eth0 -c 10 -f "icmp" &
+mininet> h1 ping -c 5 h3`
+
+✅ tshark prints actual ICMP packets. Ping shows 0% loss. **Take screenshot.**
+
+---
+
+## Screenshot 5 — UDP Blocked (iperf)
+
+bash
+
+`mininet> h4 iperf -s -u -p 5001 &
+mininet> h3 iperf -c 10.0.0.4 -u -p 5001 -b 1M -t 5`
+
+✅ You'll see `did not receive ack` warning. **Take screenshot.**
+
+---
+
+## Screenshot 6 — TCP Allowed (iperf)
+
+bash
+
+`mininet> h4 iperf -s &
+mininet> h3 iperf -c 10.0.0.4 -t 5`
+
+✅ You'll see big bandwidth numbers like `40 Gbits/sec`. **Take screenshot.**
+
+---
+
+## Screenshot 7 — Flow Table Dump
+
+In **Terminal 3** (outside mininet):
+
+bash
+
+`cd ~/packet-drop-sdn
+source ryu_venv/bin/activate
+sudo ovs-ofctl -O OpenFlow13 dump-flows s1`
+
+✅ You'll see `priority=200` lines with `actions=drop`. **Take screenshot.**
+
+---
+
+## Screenshot 8 — All Tests Passing
+
+In Terminal 2, first exit mininet:
+
+bash
+
+`mininet> exit`
+
+Then in **Terminal 3**:
+
+bash
+
+`cd ~/packet-drop-sdn
+source ryu_venv/bin/activate
+sudo mn -c
+sudo PYTHONPATH=. python3 tests/test_drop_rules.py`
+
+✅ Wait ~60 seconds. You'll see T01–T06 all `ok`. **Take screenshot.**
+
 ```bash
 # Terminal 1 — Start Ryu controller
 cd controller
@@ -65,52 +195,7 @@ sudo python3 drop_topology.py
 
 ---
 
-## Test Scenarios
 
-### Scenario A — Blocked vs Allowed (ICMP / ping)
-```bash
-mininet> h1 ping -c 4 h2    # BLOCKED → 100% packet loss
-mininet> h1 ping -c 4 h3    # ALLOWED → 0% packet loss
-```
-
-### Scenario B — UDP Blocked, TCP Allowed (iperf3)
-```bash
-# UDP blocked
-mininet> h4 iperf3 -s -p 5001 &
-mininet> h3 iperf3 -c 10.0.0.4 -u -p 5001 -t 5   # 100% loss
-
-# TCP allowed
-mininet> h4 iperf3 -s &
-mininet> h3 iperf3 -c 10.0.0.4 -t 5               # ~40 Gbps passes
-```
-
-### Scenario C — Wireshark/tshark Proof
-```bash
-# h2 listens — should see ZERO packets (blocked)
-mininet> h2 tshark -i h2-eth0 -c 20 &
-mininet> h1 ping -c 5 h2
-
-# h3 listens — should see packets (allowed)
-mininet> h3 tshark -i h3-eth0 -c 20 &
-mininet> h1 ping -c 5 h3
-```
-
-### Scenario D — Flow Table Dump
-```bash
-sudo ovs-ofctl -O OpenFlow13 dump-flows s1
-# priority=200 → drop rules (actions=drop)
-# priority=1   → forwarding rules
-# priority=0   → table-miss → controller
-```
-
----
-
-## Regression Tests
-
-```bash
-# Make sure controller is running in Terminal 1 first
-sudo PYTHONPATH=. python3 tests/test_drop_rules.py
-```
 
 Expected output:
 T01: Drop rule confirmed ... ok
