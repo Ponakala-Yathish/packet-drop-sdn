@@ -193,6 +193,8 @@ sudo PYTHONPATH=. python3 tests/test_drop_rules.py
 
 > ✅ Wait ~60 seconds. You'll see T01–T06 all `ok`. Take screenshot.
 
+
+
 **Expected output:**
 
 ```
@@ -208,6 +210,10 @@ Ran 6 tests in XX.XXXs
 OK
 
 ```
+
+# Block h1 -> h4
+sudo ovs-ofctl -O OpenFlow13 add-flow s1 \
+"priority=200,ip,nw_src=10.0.0.1,nw_dst=10.0.0.4,actions=drop"
 
 ## Screenshots
 
